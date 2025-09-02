@@ -6,10 +6,11 @@ use App\Http\Controllers\FeedController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return view('welcome ');
-});
+}); 
 
 Route::get('/dashboard', FeedController::class)
     ->middleware(['auth','verified'])
@@ -20,8 +21,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-
+#############################################################################################################################
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/reportar', [ReportController::class, 'create'])->name('reports.create'); // mapa para seleccionar punto
+    Route::post('/reports',   [ReportController::class, 'store'])->name('reports.store'); // guardar
+    Route::get('/mapa',       [ReportController::class, 'map'])->name('reports.map');     // ver todos en mapa
+});
+##############################################################################################################################
 
 Route::middleware(['auth','verified'])->group(function () {
     Route::post('/posts', [PostController::class,'store'])->name('posts.store');

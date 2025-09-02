@@ -49,5 +49,6 @@ class User extends Authenticatable
 public function posts(){ return $this->hasMany(\App\Models\Post::class); }
 public function comments(){ return $this->hasMany(\App\Models\Comment::class); }
 public function likes(){ return $this->hasMany(\App\Models\Like::class); }
+public function reports() { return $this->hasMany(\App\Models\Report::class); }
 
 }
