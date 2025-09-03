@@ -18,7 +18,46 @@
                     <x-nav-link :href="route('reports.map')" :active="request()->routeIs('reports.map')">
                         {{ __('Mapa Reportes') }}
                     </x-nav-link>
-                   
+                    <x-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.index')">
+                        <span class="relative inline-flex items-center">
+                            🔔 {{ __('Notificaciones') }}
+                            <span id="notif-badge"
+                                class="ml-1 inline-flex items-center justify-center min-w-[18px] h-[18px] text-[11px] rounded-full bg-pink-500 text-white px-1.5"
+                                style="display: {{ auth()->user()->unreadNotifications()->count() ? 'inline-flex' : 'none' }}">
+                                {{ auth()->user()->unreadNotifications()->count() }}
+                            </span>
+                        </span>
+                    </x-nav-link>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const badge = document.getElementById('notif-badge');
+                            const url = "{{ route('notifications.count') }}";
+
+                            async function tick() {
+                                try {
+                                    const res = await fetch(url, {
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest'
+                                        }
+                                    });
+                                    const data = await res.json();
+                                    if (!badge) return;
+                                    if (data.count > 0) {
+                                        badge.style.display = 'inline-flex';
+                                        badge.textContent = data.count;
+                                    } else {
+                                        badge.style.display = 'none';
+                                    }
+                                } catch (e) {
+                                    /* noop */ }
+                            }
+
+                            tick();
+                            setInterval(tick, 20000);
+                        });
+                    </script>
+
+
 
 
                 </div>

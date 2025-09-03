@@ -7,6 +7,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('welcome ');
@@ -39,6 +41,21 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/posts/{post}/like', [LikeController::class,'store'])->name('likes.store');
     Route::delete('/posts/{post}/like', [LikeController::class,'destroy'])->name('likes.destroy');
 });
+
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/tag/{tag}', [TagController::class, 'show'])->name('tags.show');
+});
+
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/notificaciones', [NotificationController::class,'index'])->name('notifications.index');
+    Route::post('/notificaciones/read-all', [NotificationController::class,'readAll'])->name('notifications.readAll');
+    Route::post('/notificaciones/{id}/read', [NotificationController::class,'readOne'])->name('notifications.readOne');
+
+    // endpoint ligero para el badge del navbar
+    Route::get('/api/notifications/unread-count', [NotificationController::class,'count'])
+        ->name('notifications.count');
+});
+
 
 
 require __DIR__.'/auth.php';

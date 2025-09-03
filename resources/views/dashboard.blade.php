@@ -28,43 +28,23 @@
                     @enderror
 
                     <div class="flex items-center justify-between gap-3">
-                        <label id="image-upload-label" class="flex items-center gap-2 cursor-pointer bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-xl border border-indigo-200 text-indigo-700 text-sm font-medium transition-all duration-300 shadow-sm">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M4 12l4-4a2 2 0 012.828 0l2.344 2.344a2 2 0 002.828 0L20 8m-8 8v-4m0 0l-4-4m4 4l4-4" />
-                          </svg>
-                          <span id="image-upload-text">Agregar imagen</span>
-                          <input type="file" name="image" accept="image/*" class="hidden" id="image-upload-input">
+                        {{-- Selector múltiple de imágenes --}}
+                        <label id="images-label" for="images"
+                               class="flex items-center gap-2 cursor-pointer bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-xl border border-indigo-200 text-indigo-700 text-sm font-medium transition-all duration-300 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M4 12l4-4a2 2 0 012.828 0l2.344 2.344a2 2 0 002.828 0L20 8m-8 8v-4m0 0l-4-4m4 4l4-4" />
+                            </svg>
+                            <span id="images-text">Agregar imágenes</span>
+                            <input id="images" type="file" name="images[]" accept="image/*" multiple class="hidden">
                         </label>
-                        <button type="button" id="remove-image-btn" class="px-3 py-2 bg-pink-100 text-pink-700 rounded-xl border border-pink-200 text-sm hidden shadow-sm">
-                          Quitar imagen
+
+                        <button type="button" id="images-clear"
+                                class="px-3 py-2 bg-pink-100 text-pink-700 rounded-xl border border-pink-200 text-sm hidden shadow-sm">
+                            Quitar selección
                         </button>
-                        <script>
-                        const imageInput = document.getElementById('image-upload-input');
-                        const removeBtn = document.getElementById('remove-image-btn');
-                        imageInput.addEventListener('change', function(e) {
-                          if (e.target.files.length > 0) {
-                            const label = document.getElementById('image-upload-label');
-                            const text = document.getElementById('image-upload-text');
-                            label.classList.add('bg-indigo-200', 'border-indigo-400', 'scale-105');
-                            label.classList.remove('bg-indigo-50', 'border-indigo-200');
-                            text.textContent = 'Imagen lista!';
-                            removeBtn.classList.remove('hidden');
-                            setTimeout(() => {
-                              label.classList.remove('scale-105');
-                            }, 400);
-                          }
-                        });
-                        removeBtn.addEventListener('click', function() {
-                          imageInput.value = '';
-                          const label = document.getElementById('image-upload-label');
-                          const text = document.getElementById('image-upload-text');
-                          label.classList.remove('bg-indigo-200', 'border-indigo-400');
-                          label.classList.add('bg-indigo-50', 'border-indigo-200');
-                          text.textContent = 'Agregar imagen';
-                          removeBtn.classList.add('hidden');
-                        });
-                        </script>
-                        @error('image')
+
+                        @error('images.*')
                             <p class="text-pink-600 text-sm">{{ $message }}</p>
                         @enderror
 
@@ -72,6 +52,9 @@
                             Publicar
                         </button>
                     </div>
+
+                    {{-- Preview de imágenes seleccionadas --}}
+                    <div id="images-preview" class="mt-2 flex flex-wrap gap-2"></div>
                 </form>
             </div>
 
@@ -92,19 +75,47 @@
                                 </div>
                             </div>
 
-                            @can('delete', $post)
-                                <form method="POST" action="{{ route('posts.destroy', $post) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="text-pink-600 text-sm hover:underline font-semibold">Eliminar</button>
-                                </form>
-                            @endcan
+                            <div class="flex items-center gap-3">
+                                @can('update', $post)
+                                    <a href="{{ route('posts.edit', $post) }}" class="text-indigo-600 text-sm hover:underline font-semibold">
+                                        Editar
+                                    </a>
+                                @endcan
+                                @can('delete', $post)
+                                    <form method="POST" action="{{ route('posts.destroy', $post) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="text-pink-600 text-sm hover:underline font-semibold">Eliminar</button>
+                                    </form>
+                                @endcan
+                            </div>
                         </div>
 
-                        {{-- Cuerpo --}}
-                        <div class="whitespace-pre-line text-gray-900 text-base font-medium">{{ $post->body }}</div>
+                        {{-- Cuerpo con menciones/hashtags --}}
+                        <div class="text-gray-900 text-base font-medium">{!! $post->body_html !!}</div>
 
-                        @if ($post->image_path)
+                        {{-- Galería / Carrusel (múltiples imágenes) --}}
+                        @php $imgs = $post->images ?? collect(); @endphp
+
+                        @if($imgs->count() === 1)
+                            <img src="{{ asset('storage/'.$imgs->first()->path) }}"
+                                 class="rounded-xl max-h-[400px] object-cover w-full border border-indigo-100 shadow" alt="">
+                        @elseif($imgs->count() > 1)
+                            <div class="relative">
+                                <div class="overflow-hidden rounded-xl border border-indigo-100 shadow">
+                                    <div class="flex transition-transform duration-300" data-carousel="{{ $post->id }}">
+                                        @foreach($imgs as $img)
+                                            <img src="{{ asset('storage/'.$img->path) }}"
+                                                 class="w-full max-h-[400px] object-cover flex-shrink-0" alt="">
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <button class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-1 rounded-xl border border-indigo-200 shadow hover:bg-white"
+                                        onclick="prevSlide({{ $post->id }}, {{ $imgs->count() }})">‹</button>
+                                <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-1 rounded-xl border border-indigo-200 shadow hover:bg-white"
+                                        onclick="nextSlide({{ $post->id }}, {{ $imgs->count() }})">›</button>
+                            </div>
+                        @elseif ($post->image_path) {{-- Fallback posts antiguos con image_path --}}
                             <img src="{{ asset('storage/' . $post->image_path) }}" alt="imagen"
                                  class="rounded-xl max-h-[400px] object-cover w-full border border-indigo-100 shadow">
                         @endif
@@ -178,4 +189,72 @@
             @endif
         </div>
     </div>
+
+    {{-- JS: Preview de imágenes + Carrusel --}}
+    <script>
+    // Preview imágenes en el formulario
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('images');
+      const label = document.getElementById('images-label');
+      const text  = document.getElementById('images-text');
+      const clear = document.getElementById('images-clear');
+      const preview = document.getElementById('images-preview');
+
+      if (input) {
+        input.addEventListener('change', () => {
+          preview.innerHTML = '';
+          const files = Array.from(input.files);
+          if (files.length) {
+            text.textContent = files.length === 1 ? '1 imagen lista' : `${files.length} imágenes listas`;
+            label.classList.add('bg-indigo-200','border-indigo-400');
+            clear.classList.remove('hidden');
+          } else {
+            text.textContent = 'Agregar imágenes';
+            label.classList.remove('bg-indigo-200','border-indigo-400');
+            clear.classList.add('hidden');
+          }
+          files.forEach(file => {
+            const url = URL.createObjectURL(file);
+            const img = document.createElement('img');
+            img.src = url;
+            img.className = 'h-20 w-20 object-cover rounded border border-indigo-200';
+            preview.appendChild(img);
+          });
+        });
+
+        clear.addEventListener('click', () => {
+          input.value = '';
+          preview.innerHTML = '';
+          text.textContent = 'Agregar imágenes';
+          label.classList.remove('bg-indigo-200','border-indigo-400');
+          clear.classList.add('hidden');
+        });
+      }
+    });
+
+    // Carrusel simple por postId
+    const carousels = {};
+    function showSlide(postId, count){
+      const track = document.querySelector(`[data-carousel="${postId}"]`);
+      if(!track) return;
+      const index = carousels[postId] ?? 0;
+      track.style.transform = `translateX(-${index * 100}%)`;
+    }
+    function nextSlide(postId, count){
+      carousels[postId] = ((carousels[postId] ?? 0) + 1) % count;
+      showSlide(postId, count);
+    }
+    function prevSlide(postId, count){
+      const current = (carousels[postId] ?? 0);
+      carousels[postId] = (current - 1 + count) % count;
+      showSlide(postId, count);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-carousel]').forEach(el => {
+        const id = parseInt(el.getAttribute('data-carousel'));
+        carousels[id] = 0;
+        showSlide(id, el.children.length);
+      });
+    });
+    </script>
 </x-app-layout>

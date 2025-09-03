@@ -13,7 +13,7 @@ class FeedController extends Controller
 
     public function __invoke()
     {
-        $posts = Post::with(['user','likes','comments.user'])
+        $posts = Post::with(['user','images','likes','comments.user'])
             ->latest()
             ->paginate(10); // o ->simplePaginate(10)
 

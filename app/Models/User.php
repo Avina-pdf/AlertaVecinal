@@ -11,6 +11,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -45,6 +46,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+
     // app/Models/User.php
 public function posts(){ return $this->hasMany(\App\Models\Post::class); }
 public function comments(){ return $this->hasMany(\App\Models\Comment::class); }
