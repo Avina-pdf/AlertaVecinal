@@ -1,128 +1,116 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Reportar incidente (selecciona el punto en el mapa)
-        </h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Nuevo reporte</h2>
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-                <div class="bg-green-50 text-green-800 px-4 py-3 rounded-lg">
-                    {{ session('status') }}
+            {{-- Errores de validación --}}
+            @if ($errors->any())
+                <div class="bg-red-50 text-red-700 px-4 py-3 rounded-lg">
+                    <ul class="list-disc ms-5 text-sm">
+                        @foreach ($errors->all() as $e) <li>{{ $e }}</li> @endforeach
+                    </ul>
                 </div>
             @endif
 
-            <div class="bg-white p-5 sm:p-6 rounded-xl shadow space-y-4">
-                <form method="POST" action="{{ route('reports.store') }}" class="space-y-4">
-                    @csrf
+            {{-- Mapa para elegir ubicación --}}
+            <div id="mapPick" class="rounded-lg border" style="height: 420px;"></div>
+            <p class="text-sm text-gray-500">Haz clic en el mapa para fijar la ubicación (puedes arrastrar el marcador).</p>
 
-                    <div class="grid gap-4 sm:grid-cols-2">
-                        <div>
-                            <label class="block text-sm font-medium">Título</label>
-                            <input name="title" value="{{ old('title') }}" required
-                                   class="w-full border rounded-lg px-3 py-2">
-                            @error('title') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium">Descripción (opcional)</label>
-                            <input name="description" value="{{ old('description') }}"
-                                   class="w-full border rounded-lg px-3 py-2">
-                            @error('description') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
+            {{-- Formulario --}}
+            <form method="POST" action="{{ route('reports.store') }}" class="bg-white rounded-lg border p-4 space-y-4">
+                @csrf
 
-                    {{-- MAPA --}}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Título</label>
+                    <input name="title" value="{{ old('title') }}" required
+                           class="mt-1 w-full border rounded-lg px-3 py-2" maxlength="120">
+                    @error('title') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Descripción (opcional)</label>
+                    <textarea name="description" rows="3" class="mt-1 w-full border rounded-lg px-3 py-2">{{ old('description') }}</textarea>
+                    @error('description') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-medium mb-2">Selecciona la ubicación</label>
-                        <div id="map" class="rounded-lg border" style="height: 480px;"></div>
-                        <p class="text-xs text-gray-500 mt-2">
-                            Haz clic en el mapa para colocar un marcador. Puedes arrastrarlo para afinar la posición.
-                        </p>
+                        <label class="block text-sm font-medium text-gray-700">Latitud</label>
+                        <input id="lat" name="lat" value="{{ old('lat') }}" required readonly
+                               class="mt-1 w-full border rounded-lg px-3 py-2 bg-gray-50">
+                        @error('lat') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
-
-                    {{-- Lat/Lng ocultos --}}
-                    <input type="hidden" name="lat" id="lat" value="{{ old('lat') }}">
-                    <input type="hidden" name="lng" id="lng" value="{{ old('lng') }}">
-
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-600">
-                            <span id="coordsLabel">Sin punto seleccionado</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button type="button" id="useLocation"
-                                    class="px-3 py-2 bg-gray-200 rounded-lg">Usar mi ubicación</button>
-                            <button id="submitBtn"
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-                                    disabled>Guardar</button>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Longitud</label>
+                        <input id="lng" name="lng" value="{{ old('lng') }}" required readonly
+                               class="mt-1 w-full border rounded-lg px-3 py-2 bg-gray-50">
+                        @error('lng') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
-                </form>
-            </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Duración del reporte</label>
+                        <select name="ttl" class="mt-1 w-full border rounded-lg px-3 py-2" required>
+                            <option value="6h"  {{ old('ttl','24h')==='6h'?'selected':'' }}>6 horas</option>
+                            <option value="24h" {{ old('ttl','24h')==='24h'?'selected':'' }}>24 horas</option>
+                            <option value="3d"  {{ old('ttl')==='3d'?'selected':'' }}>3 días</option>
+                            <option value="7d"  {{ old('ttl')==='7d'?'selected':'' }}>7 días</option>
+                        </select>
+                        @error('ttl') <p class="text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                </div>
 
-            <div class="text-right">
-                <a class="text-blue-700 hover:underline" href="{{ route('reports.map') }}">Ver mapa con reportes</a>
-            </div>
+                <div class="flex justify-end gap-3">
+                    <a href="{{ route('reports.map') }}" class="px-4 py-2 border rounded-lg">Cancelar</a>
+                    <button id="submitBtn" class="px-5 py-2 bg-indigo-600 text-white rounded-lg disabled:opacity-50"
+                            type="submit" disabled>Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    {{-- Leaflet (CDN) --}}
+    {{-- Leaflet --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script>
-        const map = L.map('map').setView([20.6736, -103.344], 13); // centrado inicial (GDL). Cámbialo si quieres.
+    const map = L.map('mapPick').setView([20.6736, -103.344], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
 
-        // Capa base
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
+    const latInput = document.getElementById('lat');
+    const lngInput = document.getElementById('lng');
+    const submitBtn = document.getElementById('submitBtn');
+    let marker = null;
 
-        const latInput = document.getElementById('lat');
-        const lngInput = document.getElementById('lng');
-        const coordsLabel = document.getElementById('coordsLabel');
-        const submitBtn = document.getElementById('submitBtn');
-        let marker = null;
+    function updateInputs(lat, lng){
+        latInput.value = Number(lat).toFixed(6);
+        lngInput.value = Number(lng).toFixed(6);
+        submitBtn.disabled = !(latInput.value && lngInput.value);
+    }
 
-        function setPoint(lat, lng) {
-            const ll = [lat, lng];
-            if (marker) {
-                marker.setLatLng(ll);
-            } else {
-                marker = L.marker(ll, { draggable: true }).addTo(map);
-                marker.on('dragend', () => {
-                    const p = marker.getLatLng();
-                    latInput.value = p.lat.toFixed(7);
-                    lngInput.value = p.lng.toFixed(7);
-                    coordsLabel.textContent = `Lat: ${latInput.value}, Lng: ${lngInput.value}`;
-                });
-            }
-            latInput.value = lat.toFixed(7);
-            lngInput.value = lng.toFixed(7);
-            coordsLabel.textContent = `Lat: ${latInput.value}, Lng: ${lngInput.value}`;
-            submitBtn.disabled = false;
-        }
-
-        // Click en el mapa
-        map.on('click', (e) => {
-            setPoint(e.latlng.lat, e.latlng.lng);
-        });
-
-        // Intentar centrar en ubicación del usuario
-        if ('geolocation' in navigator) {
-            navigator.geolocation.getCurrentPosition(pos => {
-                map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+    function setPoint(lat, lng){
+        if (marker) {
+            marker.setLatLng([lat, lng]);
+        } else {
+            marker = L.marker([lat, lng], {draggable:true}).addTo(map);
+            marker.on('dragend', e => {
+                const p = e.target.getLatLng();
+                updateInputs(p.lat, p.lng);
             });
         }
+        updateInputs(lat, lng);
+        map.setView([lat, lng], 15);
+    }
 
-        // Botón "Usar mi ubicación" para poner marcador directo
-        document.getElementById('useLocation').addEventListener('click', () => {
-            if (!('geolocation' in navigator)) return;
-            navigator.geolocation.getCurrentPosition(pos => {
-                setPoint(pos.coords.latitude, pos.coords.longitude);
-                map.setView([pos.coords.latitude, pos.coords.longitude], 16);
-            });
-        });
+    // Click en mapa fija el punto
+    map.on('click', e => setPoint(e.latlng.lat, e.latlng.lng));
+
+    // Intentar centrar en mi ubicación y fijar marcador inicial
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => setPoint(pos.coords.latitude, pos.coords.longitude),
+            ()  => {} // silencio si falla
+        );
+    }
     </script>
 </x-app-layout>

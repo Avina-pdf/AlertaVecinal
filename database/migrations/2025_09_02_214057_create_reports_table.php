@@ -13,9 +13,8 @@ return new class extends Migration {
             $table->text('description')->nullable();
             $table->decimal('lat', 10, 7);
             $table->decimal('lng', 10, 7);
+            $table->timestamp('expires_at')->nullable()->index();
             $table->timestamps();
-
-            $table->index(['created_at']);
             $table->index(['lat','lng']);
         });
     }
