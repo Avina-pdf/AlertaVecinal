@@ -1,10 +1,9 @@
-<x-app-layout>
+<x-app-layout> 
     <x-slot name="header">
         <h2 class="font-bold text-2xl text-indigo-700 tracking-tight flex items-center gap-2">
             <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded">📰</span>
             Alerta Feed
         </h2>
-       
     </x-slot>
 
     <div class="py-10 bg-gradient-to-br from-indigo-50 via-white to-pink-50 min-h-screen">
@@ -56,7 +55,7 @@
             {{-- Feed --}}
             @if(isset($posts) && $posts->count() > 0)
                 @foreach ($posts as $post)
-                    <div class="bg-white p-6 rounded-xl border shadow space-y-4">
+                    <div id="post-{{ $post->id }}" class="bg-white p-6 rounded-xl border shadow space-y-4">
 
                         {{-- Header del post --}}
                         <div class="flex items-center justify-between">
@@ -65,7 +64,12 @@
                                     {{ strtoupper(substr($post->user->name, 0, 1)) }}
                                 </div>
                                 <div>
-                                    <p class="font-semibold text-indigo-700 text-base">{{ $post->user->name }}</p>
+                                    <p class="font-semibold text-indigo-700 text-base flex items-center gap-2">
+                                        {{ $post->user->name }}
+                                        @if(auth()->id() === $post->user_id)
+                                            <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">Tú</span>
+                                        @endif
+                                    </p>
                                     <p class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
@@ -75,11 +79,16 @@
                                         Editar
                                     </a>
                                 @endcan
+
+                                {{-- Sólo el autor puede eliminar --}}
                                 @can('delete', $post)
-                                    <form method="POST" action="{{ route('posts.destroy', $post) }}">
+                                    <form method="POST" action="{{ route('posts.destroy', $post) }}"
+                                          onsubmit="return confirm('¿Seguro que quieres eliminar esta publicación?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="text-pink-500 text-xs hover:underline font-semibold">Eliminar</button>
+                                        <button class="text-pink-500 text-xs hover:underline font-semibold" aria-label="Eliminar publicación">
+                                            Eliminar
+                                        </button>
                                     </form>
                                 @endcan
                             </div>
@@ -143,8 +152,11 @@
                                         {{ $comment->body }}
                                     </p>
                                     <p class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</p>
+
+                                    {{-- Autor del comentario o del post pueden borrar --}}
                                     @if (auth()->id() === $comment->user_id || auth()->id() === $post->user_id)
-                                        <form method="POST" action="{{ route('comments.destroy', $comment) }}" class="mt-1">
+                                        <form method="POST" action="{{ route('comments.destroy', $comment) }}" class="mt-1"
+                                              onsubmit="return confirm('¿Eliminar este comentario?');">
                                             @csrf
                                             @method('DELETE')
                                             <button class="text-xs text-pink-500 hover:underline font-semibold">Eliminar</button>
@@ -152,11 +164,13 @@
                                     @endif
                                 </div>
                             @endforeach
+
                             @if ($post->comments->count() > 3)
                                 <p class="text-xs text-gray-400">
                                     Mostrando 3 de {{ $post->comments->count() }} comentarios
                                 </p>
                             @endif
+
                             <form method="POST" action="{{ route('comments.store', $post) }}" class="flex gap-2">
                                 @csrf
                                 <input name="body" class="flex-1 border-2 border-indigo-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300 text-gray-800 placeholder:text-gray-400 text-xs"

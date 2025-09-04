@@ -89,6 +89,7 @@ class PostController extends Controller
 
         return redirect()->route('dashboard')->with('status', 'Publicación actualizada');
     }
+    
 
     public function destroy(Post $post)
     {
@@ -104,4 +105,6 @@ class PostController extends Controller
         $post->delete();
         return back();
     }
+
+
 }
