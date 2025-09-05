@@ -81,7 +81,7 @@
                                 @endcan
 
                                 {{-- Sólo el autor puede eliminar --}}
-                                @can('delete', $post)
+                                
                                     <form method="POST" action="{{ route('posts.destroy', $post) }}"
                                           onsubmit="return confirm('¿Seguro que quieres eliminar esta publicación?');">
                                         @csrf
@@ -90,7 +90,7 @@
                                             Eliminar
                                         </button>
                                     </form>
-                                @endcan
+                             
                             </div>
                         </div>
 
