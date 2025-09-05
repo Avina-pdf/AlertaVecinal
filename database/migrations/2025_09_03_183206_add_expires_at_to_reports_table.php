@@ -5,14 +5,21 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
+    public function up(): void
+    {
         Schema::table('reports', function (Blueprint $table) {
-            $table->timestamp('expires_at')->nullable()->index()->after('lng');
+            if (!Schema::hasColumn('reports', 'expires_at')) {
+                $table->timestamp('expires_at')->nullable()->after('lng');
+            }
         });
     }
-    public function down(): void {
+
+    public function down(): void
+    {
         Schema::table('reports', function (Blueprint $table) {
-            $table->dropColumn('expires_at');
+            if (Schema::hasColumn('reports', 'expires_at')) {
+                $table->dropColumn('expires_at');
+            }
         });
     }
 };
