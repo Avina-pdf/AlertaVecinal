@@ -99,16 +99,21 @@
 
                         {{-- Imágenes --}}
                         @php $imgs = $post->images ?? collect(); @endphp
+
                         @if($imgs->count() === 1)
-                            <img src="{{ asset('storage/'.$imgs->first()->path) }}"
-                                 class="rounded-xl max-h-96 object-cover w-full border shadow" alt="">
+                            <img
+                                src="{{ asset('storage/'.$imgs->first()->path) }}"
+                                class="rounded-xl max-h-96 object-cover w-full border shadow js-lightbox cursor-zoom-in"
+                                data-group="post-{{ $post->id }}" data-index="0" alt="">
                         @elseif($imgs->count() > 1)
                             <div class="relative">
                                 <div class="overflow-hidden rounded-xl border shadow">
                                     <div class="flex transition-transform duration-300" data-carousel="{{ $post->id }}">
                                         @foreach($imgs as $img)
-                                            <img src="{{ asset('storage/'.$img->path) }}"
-                                                 class="w-full max-h-96 object-cover flex-shrink-0" alt="">
+                                            <img
+                                                src="{{ asset('storage/'.$img->path) }}"
+                                                class="w-full max-h-96 object-cover flex-shrink-0 js-lightbox cursor-zoom-in"
+                                                data-group="post-{{ $post->id }}" data-index="{{ $loop->index }}" alt="">
                                         @endforeach
                                     </div>
                                 </div>
@@ -118,8 +123,10 @@
                                         onclick="nextSlide({{ $post->id }}, {{ $imgs->count() }})">›</button>
                             </div>
                         @elseif ($post->image_path)
-                            <img src="{{ asset('storage/' . $post->image_path) }}" alt="imagen"
-                                 class="rounded-xl max-h-96 object-cover w-full border shadow">
+                            <img
+                                src="{{ asset('storage/' . $post->image_path) }}"
+                                class="rounded-xl max-h-96 object-cover w-full border shadow js-lightbox cursor-zoom-in"
+                                data-group="post-{{ $post->id }}" data-index="0" alt="imagen">
                         @endif
 
                         {{-- Acciones --}}
@@ -192,6 +199,25 @@
         </div>
     </div>
 
+    {{-- Overlay del Lightbox --}}
+    <div id="lightbox"
+         class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 select-none">
+      <button id="lbClose"
+              class="absolute top-4 right-4 text-white/90 hover:text-white text-2xl px-2"
+              aria-label="Cerrar">✕</button>
+
+      <button id="lbPrev"
+              class="absolute left-3 md:left-6 text-white/90 hover:text-white text-4xl px-3"
+              aria-label="Anterior">‹</button>
+
+      <img id="lbImg" src=""
+           class="max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl" alt="">
+
+      <button id="lbNext"
+              class="absolute right-3 md:right-6 text-white/90 hover:text-white text-4xl px-3"
+              aria-label="Siguiente">›</button>
+    </div>
+
     {{-- JS igual que antes --}}
     <script>
     // Preview imágenes en el formulario
@@ -258,5 +284,90 @@
         showSlide(id, el.children.length);
       });
     });
+    </script>
+
+    {{-- JS Lightbox --}}
+    <script>
+    (function(){
+      const groups = {};     // { groupId: [src1, src2, ...] }
+      let currentGroup = null;
+      let currentIndex = 0;
+
+      // indexa imágenes y enlaza clic
+      document.querySelectorAll('.js-lightbox').forEach(img => {
+        const g = img.dataset.group || 'default';
+        const i = parseInt(img.dataset.index || '0', 10);
+        if(!groups[g]) groups[g] = [];
+        groups[g][i] = img.src; // conserva el índice exacto
+
+        img.addEventListener('click', () => openLightbox(g, i));
+      });
+
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lbImg');
+      const lbPrev = document.getElementById('lbPrev');
+      const lbNext = document.getElementById('lbNext');
+      const lbClose = document.getElementById('lbClose');
+
+      function openLightbox(group, index){
+        currentGroup = group;
+        currentIndex = index;
+        setImage();
+        lb.classList.remove('hidden');
+        lb.classList.add('flex');
+        updateArrows();
+      }
+
+      function closeLightbox(){
+        lb.classList.add('hidden');
+        lb.classList.remove('flex');
+        currentGroup = null;
+      }
+
+      function setImage(){
+        const arr = groups[currentGroup] || [];
+        lbImg.src = arr[currentIndex] || '';
+      }
+
+      function updateArrows(){
+        const arr = groups[currentGroup] || [];
+        const many = arr.filter(Boolean).length > 1;
+        lbPrev.style.display = many ? 'block' : 'none';
+        lbNext.style.display = many ? 'block' : 'none';
+      }
+
+      function next(){
+        const arr = groups[currentGroup] || [];
+        if(!arr.length) return;
+        currentIndex = (currentIndex + 1) % arr.length;
+        while(!arr[currentIndex]) currentIndex = (currentIndex + 1) % arr.length;
+        setImage();
+      }
+      function prev(){
+        const arr = groups[currentGroup] || [];
+        if(!arr.length) return;
+        currentIndex = (currentIndex - 1 + arr.length) % arr.length;
+        while(!arr[currentIndex]) currentIndex = (currentIndex - 1 + arr.length) % arr.length;
+        setImage();
+      }
+
+      // cerrar al click fuera (solo fondo)
+      lb.addEventListener('click', (e) => {
+        if(e.target === lb) closeLightbox();
+      });
+
+      // botones
+      lbClose.addEventListener('click', closeLightbox);
+      lbNext.addEventListener('click', next);
+      lbPrev.addEventListener('click', prev);
+
+      // teclado
+      window.addEventListener('keydown', (e) => {
+        if(lb.classList.contains('hidden')) return;
+        if(e.key === 'Escape') closeLightbox();
+        if(e.key === 'ArrowRight') next();
+        if(e.key === 'ArrowLeft')  prev();
+      });
+    })();
     </script>
 </x-app-layout>
