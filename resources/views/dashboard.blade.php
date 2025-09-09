@@ -1,17 +1,17 @@
 <x-app-layout> 
     <x-slot name="header">
-        <h2 class="font-bold text-2xl text-indigo-700 tracking-tight flex items-center gap-2">
-            <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded">📰</span>
+        <h2 class="font-bold text-2xl text-[#1E3A8A] tracking-tight flex items-center gap-2">
+            <span class="bg-[#F3F4F6] text-[#1E3A8A] px-2 py-1 rounded">📰</span>
             Alerta Feed
         </h2>
     </x-slot>
 
-    <div class="py-10 bg-gradient-to-br from-indigo-50 via-white to-pink-50 min-h-screen">
+    <div class="py-10 bg-gradient-to-br from-[#F3F4F6] via-[#FFFFFF] to-[#F3F4F6] min-h-screen">
         <div class="max-w-4xl mx-auto px-6 space-y-8">
 
             {{-- Mensaje de estado --}}
             @if (session('status'))
-                <div class="bg-green-100 text-green-800 px-4 py-3 rounded shadow">
+                <div class="bg-[#22C55E] text-white px-4 py-3 rounded shadow">
                     {{ session('status') }}
                 </div>
             @endif
@@ -21,16 +21,16 @@
                 <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
 
-                    <textarea name="body" rows="2" class="w-full border-2 border-indigo-200 rounded-lg p-3 focus:ring-2 focus:ring-indigo-300 text-gray-800 placeholder:text-gray-400 text-lg"
+                    <textarea name="body" rows="2" class="w-full border-2 border-[#1E3A8A] rounded-lg p-3 focus:ring-2 focus:ring-[#1E3A8A] text-gray-800 placeholder:text-gray-400 text-lg"
                               placeholder="¿Qué estás pensando?" required>{{ old('body') }}</textarea>
                     @error('body')
-                        <p class="text-pink-600 text-xs">{{ $message }}</p>
+                        <p class="text-[#22C55E] text-xs">{{ $message }}</p>
                     @enderror
 
                     <div class="flex items-center gap-3">
                         <label id="images-label" for="images"
-                               class="flex items-center gap-2 cursor-pointer bg-indigo-50 px-3 py-2 rounded-lg border border-indigo-200 text-indigo-600 text-sm font-semibold hover:bg-indigo-100 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                               class="flex items-center gap-2 cursor-pointer bg-[#F3F4F6] px-3 py-2 rounded-lg border border-[#1E3A8A] text-[#1E3A8A] text-sm font-semibold hover:bg-[#FFFFFF] transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#1E3A8A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M4 12l4-4a2 2 0 012.828 0l2.344 2.344a2 2 0 002.828 0L20 8m-8 8v-4m0 0l-4-4m4 4l4-4" />
                             </svg>
@@ -38,13 +38,13 @@
                             <input id="images" type="file" name="images[]" accept="image/*" multiple class="hidden">
                         </label>
                         <button type="button" id="images-clear"
-                                class="px-3 py-2 bg-pink-50 text-pink-500 rounded-lg border border-pink-200 text-sm hidden hover:bg-pink-100 transition">
+                                class="px-3 py-2 bg-[#F3F4F6] text-[#22C55E] rounded-lg border border-[#22C55E] text-sm hidden hover:bg-[#FFFFFF] transition">
                             Quitar
                         </button>
                         @error('images.*')
-                            <p class="text-pink-600 text-xs">{{ $message }}</p>
+                            <p class="text-[#22C55E] text-xs">{{ $message }}</p>
                         @enderror
-                        <button class="px-4 py-2 bg-indigo-600 hover:bg-pink-500 text-white rounded-lg text-sm font-bold shadow transition">
+                        <button class="px-4 py-2 bg-[#1E3A8A] hover:bg-[#22C55E] text-white rounded-lg text-sm font-bold shadow transition">
                             Publicar
                         </button>
                     </div>
@@ -60,14 +60,14 @@
                         {{-- Header del post --}}
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700 text-lg shadow">
+                                <div class="h-10 w-10 rounded-full bg-[#F3F4F6] flex items-center justify-center font-bold text-[#1E3A8A] text-lg shadow">
                                     {{ strtoupper(substr($post->user->name, 0, 1)) }}
                                 </div>
                                 <div>
-                                    <p class="font-semibold text-indigo-700 text-base flex items-center gap-2">
+                                    <p class="font-semibold text-[#1E3A8A] text-base flex items-center gap-2">
                                         {{ $post->user->name }}
                                         @if(auth()->id() === $post->user_id)
-                                            <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded">Tú</span>
+                                            <span class="text-xs bg-[#F3F4F6] text-[#1E3A8A] px-2 py-0.5 rounded">Tú</span>
                                         @endif
                                     </p>
                                     <p class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</p>
@@ -75,7 +75,7 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 @can('update', $post)
-                                    <a href="{{ route('posts.edit', $post) }}" class="text-indigo-500 text-xs hover:underline font-semibold">
+                                    <a href="{{ route('posts.edit', $post) }}" class="text-[#1E3A8A] text-xs hover:underline font-semibold">
                                         Editar
                                     </a>
                                 @endcan
@@ -86,7 +86,7 @@
                                           onsubmit="return confirm('¿Seguro que quieres eliminar esta publicación?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="text-pink-500 text-xs hover:underline font-semibold" aria-label="Eliminar publicación">
+                                        <button class="text-[#22C55E] text-xs hover:underline font-semibold" aria-label="Eliminar publicación">
                                             Eliminar
                                         </button>
                                     </form>
@@ -117,9 +117,9 @@
                                         @endforeach
                                     </div>
                                 </div>
-                                <button class="absolute left-2 top-1/2 -translate-y-1/2 bg-white px-3 py-2 rounded-full border shadow text-lg font-bold"
+                                <button class="absolute left-2 top-1/2 -translate-y-1/2 bg-white px-3 py-2 rounded-full border shadow text-lg font-bold text-[#1E3A8A]"
                                         onclick="prevSlide({{ $post->id }}, {{ $imgs->count() }})">‹</button>
-                                <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-white px-3 py-2 rounded-full border shadow text-lg font-bold"
+                                <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-white px-3 py-2 rounded-full border shadow text-lg font-bold text-[#1E3A8A]"
                                         onclick="nextSlide({{ $post->id }}, {{ $imgs->count() }})">›</button>
                             </div>
                         @elseif ($post->image_path)
@@ -138,12 +138,12 @@
                                 <form method="POST" action="{{ route('likes.destroy', $post) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="flex items-center gap-1 text-pink-500 font-bold hover:underline">❤️ Quitar like</button>
+                                    <button class="flex items-center gap-1 text-[#22C55E] font-bold hover:underline">❤️ Quitar like</button>
                                 </form>
                             @else
                                 <form method="POST" action="{{ route('likes.store', $post) }}">
                                     @csrf
-                                    <button class="flex items-center gap-1 text-indigo-600 font-bold hover:underline">🤍 Me gusta</button>
+                                    <button class="flex items-center gap-1 text-[#1E3A8A] font-bold hover:underline">🤍 Me gusta</button>
                                 </form>
                             @endif
                             <span class="text-gray-400">{{ $post->likes->count() }} likes</span>
@@ -153,9 +153,9 @@
                         {{-- Comentarios --}}
                         <div class="space-y-3">
                             @foreach ($post->comments->take(3) as $comment)
-                                <div class="bg-indigo-50 rounded-lg p-3 border border-indigo-100">
+                                <div class="bg-[#F3F4F6] rounded-lg p-3 border border-[#1E3A8A]">
                                     <p class="text-xs">
-                                        <span class="font-semibold text-indigo-700">{{ $comment->user->name }}:</span>
+                                        <span class="font-semibold text-[#1E3A8A]">{{ $comment->user->name }}:</span>
                                         {{ $comment->body }}
                                     </p>
                                     <p class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</p>
@@ -166,7 +166,7 @@
                                               onsubmit="return confirm('¿Eliminar este comentario?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="text-xs text-pink-500 hover:underline font-semibold">Eliminar</button>
+                                            <button class="text-xs text-[#22C55E] hover:underline font-semibold">Eliminar</button>
                                         </form>
                                     @endif
                                 </div>
@@ -180,9 +180,9 @@
 
                             <form method="POST" action="{{ route('comments.store', $post) }}" class="flex gap-2">
                                 @csrf
-                                <input name="body" class="flex-1 border-2 border-indigo-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-300 text-gray-800 placeholder:text-gray-400 text-xs"
+                                <input name="body" class="flex-1 border-2 border-[#1E3A8A] rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#1E3A8A] text-gray-800 placeholder:text-gray-400 text-xs"
                                        placeholder="Escribe un comentario..." required>
-                                <button class="px-3 py-2 bg-indigo-600 hover:bg-pink-500 text-white rounded-lg text-xs font-bold shadow transition">Comentar</button>
+                                <button class="px-3 py-2 bg-[#1E3A8A] hover:bg-[#22C55E] text-white rounded-lg text-xs font-bold shadow transition">Comentar</button>
                             </form>
                         </div>
                     </div>
@@ -201,7 +201,7 @@
 
     {{-- Overlay del Lightbox --}}
     <div id="lightbox"
-         class="fixed inset-0 bg-black/80 hidden items-center justify-center z-50 select-none">
+         class="fixed inset-0 bg-[#1E3A8A]/80 hidden items-center justify-center z-50 select-none">
       <button id="lbClose"
               class="absolute top-4 right-4 text-white/90 hover:text-white text-2xl px-2"
               aria-label="Cerrar">✕</button>
@@ -234,11 +234,11 @@
           const files = Array.from(input.files);
           if (files.length) {
             text.textContent = files.length === 1 ? '1 imagen lista' : `${files.length} imágenes listas`;
-            label.classList.add('bg-indigo-100','border-indigo-400');
+            label.classList.add('bg-[#FFFFFF]','border-[#22C55E]');
             clear.classList.remove('hidden');
           } else {
             text.textContent = 'Agregar imágenes';
-            label.classList.remove('bg-indigo-100','border-indigo-400');
+            label.classList.remove('bg-[#FFFFFF]','border-[#22C55E]');
             clear.classList.add('hidden');
           }
           files.forEach(file => {
@@ -254,7 +254,7 @@
           input.value = '';
           preview.innerHTML = '';
           text.textContent = 'Agregar imágenes';
-          label.classList.remove('bg-indigo-100','border-indigo-400');
+          label.classList.remove('bg-[#FFFFFF]','border-[#22C55E]');
           clear.classList.add('hidden');
         });
       }

@@ -1,25 +1,26 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Mapa de reportes
+        <h2 class="font-bold text-2xl text-[#1E3A8A] tracking-tight flex items-center gap-2">
+            <span class="bg-[#F3F4F6] text-[#1E3A8A] px-2 py-1 rounded">🗺</span>
+            Mapa de repotes 
         </h2>
     </x-slot>
 
-    <div class="py-6">
+    <div class="py-6" style="background-color: #F3F4F6;">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             @if (session('status'))
-            <div class="bg-green-50 text-green-800 px-4 py-3 rounded-lg mb-4">
+            <div class="bg-[#22C55E] text-white px-4 py-3 rounded-lg mb-4">
                 {{ session('status') }}
             </div>
             @endif
 
             {{-- Mapa --}}
-            <div id="mapAll" class="rounded-lg border" style="height: 560px;"></div>
+            <div id="mapAll" class="rounded-lg border" style="height: 560px; background-color: #FFFFFF;"></div>
 
             {{-- CTA --}}
             <div class="mt-3 flex justify-end">
                 <a href="{{ route('reports.create') }}"
-                    class="inline-flex items-center px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-full shadow-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+                    class="inline-flex items-center px-5 py-2 bg-[#1E3A8A] text-white font-semibold rounded-full shadow-lg hover:bg-[#1E3A8A] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:ring-offset-2">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
@@ -31,26 +32,20 @@
             @if($reports->count())
             <div class="mt-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h3 class="font-semibold text-gray-700">Reportes recientes ({{ $reports->count() }})</h3>
-                    <button id="locateMe" class="text-sm text-indigo-600 hover:underline">Centrar en mi ubicación</button>
+                    <h3 class="font-semibold text-[#1E3A8A]">Reportes recientes ({{ $reports->count() }})</h3>
+                    <button id="locateMe" class="text-sm text-[#1E3A8A] hover:underline">Centrar en mi ubicación</button>
                 </div>
 
-                <div id="reportList" class="bg-white rounded-lg border shadow divide-y max-h-72 overflow-y-auto">
+                <div id="reportList" class="bg-[#FFFFFF] rounded-lg border shadow divide-y max-h-72 overflow-y-auto">
                     @foreach($reports as $r)
-                    <div>
-
-
-
-
-                    </div>
-
+                    <div></div>
                     <button
                         type="button"
-                        class="w-full text-left p-3 hover:bg-indigo-50 focus:bg-indigo-50 focus:outline-none flex items-center justify-between"
+                        class="w-full text-left p-3 hover:bg-[#F3F4F6] focus:bg-[#F3F4F6] focus:outline-none flex items-center justify-between"
                         data-report-id="{{ $r->id }}"
                         aria-label="Ver en mapa: {{ $r->title }}">
                         <div>
-                            <p class="font-semibold text-gray-800">{{ $r->title }}</p>
+                            <p class="font-semibold text-[#1E3A8A]">{{ $r->title }}</p>
                             @if($r->description)
                             <p class="text-sm text-gray-600">
                                 {{ \Illuminate\Support\Str::limit($r->description, 120) }}
@@ -58,13 +53,13 @@
                             @endif
                             <p class="text-xs text-gray-500">{{ $r->created_at->diffForHumans() }}</p>
                         </div>
-                        <span class="text-indigo-400 text-xs">Ver en mapa →</span>
+                        <span class="text-[#1E3A8A] text-xs">Ver en mapa →</span>
                     </button>
                     @endforeach
                 </div>
             </div>
             @else
-            <div class="mt-4 bg-white rounded-lg border p-6 text-gray-500 text-center">
+            <div class="mt-4 bg-[#FFFFFF] rounded-lg border p-6 text-gray-500 text-center">
                 No hay reportes todavía.
             </div>
             @endif
@@ -90,13 +85,21 @@
             const lat = parseFloat(r.lat);
             const lng = parseFloat(r.lng);
             const desc = r.description ? String(r.description).replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
-const html = `
-  <strong>${r.title}</strong><br>
-  <small>${(new Date(r.created_at)).toLocaleString()}</small>
-  ${desc ? `<div style="margin-top:4px;color:#374151;font-size:12px;">${desc}</div>` : ''}
-`;
-const m = L.marker([lat, lng]).addTo(map).bindPopup(html);
-
+            const html = `
+                <strong style="color:#1E3A8A;">${r.title}</strong><br>
+                <small style="color:#22C55E;">${(new Date(r.created_at)).toLocaleString()}</small>
+                ${desc ? `<div style="margin-top:4px;color:#1E3A8A;font-size:12px;">${desc}</div>` : ''}
+            `;
+            const m = L.marker([lat, lng], {
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).addTo(map).bindPopup(html);
 
             markers.push(m);
             markersById[r.id] = m;
@@ -116,12 +119,12 @@ const m = L.marker([lat, lng]).addTo(map).bindPopup(html);
             if (!list) return;
 
             list.querySelectorAll('.is-active').forEach(el => {
-                el.classList.remove('is-active', 'ring-2', 'ring-indigo-300', 'bg-indigo-50');
+                el.classList.remove('is-active', 'ring-2', 'ring-[#1E3A8A]', 'bg-[#F3F4F6]');
             });
 
             const el = list.querySelector(`[data-report-id="${id}"]`);
             if (el) {
-                el.classList.add('is-active', 'ring-2', 'ring-indigo-300', 'bg-indigo-50');
+                el.classList.add('is-active', 'ring-2', 'ring-[#1E3A8A]', 'bg-[#F3F4F6]');
                 el.scrollIntoView({
                     behavior: 'smooth',
                     block: 'nearest'
@@ -153,7 +156,9 @@ const m = L.marker([lat, lng]).addTo(map).bindPopup(html);
                     map.setView(p, 15);
                     L.circleMarker(p, {
                         radius: 6,
-                        color: '#4f46e5'
+                        color: '#22C55E',
+                        fillColor: '#22C55E',
+                        fillOpacity: 0.8
                     }).addTo(map).bindPopup('Tu ubicación').openPopup();
                 });
             });

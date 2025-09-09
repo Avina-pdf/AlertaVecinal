@@ -1,9 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-bold text-2xl text-indigo-700 tracking-tight">
-                Notificaciones
-            </h2>
+              <h2 class="font-bold text-2xl text-[#1E3A8A] tracking-tight flex items-center gap-2">
+            <span class="bg-[#F3F4F6] text-[#1E3A8A] px-2 py-1 rounded">🔔</span>
+            Mapa de repotes 
+        </h2>
             <form method="POST" action="{{ route('notifications.readAll') }}">
                 @csrf
                 <button class="text-sm text-indigo-600 hover:underline">Marcar todas como leídas</button>
