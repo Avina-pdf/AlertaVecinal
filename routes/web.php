@@ -9,6 +9,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PollController;
 
 Route::get('/', function () {
     return view('welcome ');
@@ -61,7 +62,15 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::get('/api/notifications/unread-count', [NotificationController::class,'count'])
         ->name('notifications.count');
 });
-
+Route::middleware(['auth','verified'])->group(function () {
+    Route::get('/polls',            [PollController::class,'index'])->name('polls.index');
+    Route::get('/polls/create',     [PollController::class,'create'])->name('polls.create');
+    Route::post('/polls',           [PollController::class,'store'])->name('polls.store');
+    Route::get('/polls/{poll}',     [PollController::class,'show'])->name('polls.show');
+    Route::post('/polls/{poll}/vote', [PollController::class,'vote'])->name('polls.vote');
+    Route::post('/polls/{poll}/close',[PollController::class,'close'])->name('polls.close');
+    Route::delete('/polls/{poll}',  [PollController::class,'destroy'])->name('polls.destroy');
+});
 
 
 require __DIR__.'/auth.php';

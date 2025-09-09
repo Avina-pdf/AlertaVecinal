@@ -46,7 +46,16 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+  public function polls()
+    {
+        return $this->hasMany(Poll::class);
+    }
 
+    /** Votos del usuario en encuestas */
+    public function pollVotes()
+    {
+        return $this->hasMany(PollVote::class);
+    }
 
 
     // app/Models/User.php
@@ -54,5 +63,6 @@ public function posts(){ return $this->hasMany(\App\Models\Post::class); }
 public function comments(){ return $this->hasMany(\App\Models\Comment::class); }
 public function likes(){ return $this->hasMany(\App\Models\Like::class); }
 public function reports() { return $this->hasMany(\App\Models\Report::class); }
+
 
 }
