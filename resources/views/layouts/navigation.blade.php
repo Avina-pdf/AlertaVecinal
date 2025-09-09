@@ -86,6 +86,9 @@
             <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.index')" class="text-[#1E3A8A] font-bold hover:bg-[#22C55E]/20 px-4 py-2 rounded transition-all duration-300 ease-in-out hover:scale-105">
                 {{__('Notificaciones') }}
             </x-responsive-nav-link>
+            <x-nav-link :href="route('polls.index')" :active="request()->routeIs('polls.*')" class="text-[#1E3A8A] font-bold hover:bg-[#22C55E]/20 px-4 py-2 rounded transition-all duration-300 ease-in-out hover:scale-105">
+                        {{ __('Encuestas') }}
+                    </x-nav-link>
         </div>
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-[#22C55E]/30">
