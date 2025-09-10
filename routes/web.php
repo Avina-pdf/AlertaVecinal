@@ -10,6 +10,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PollController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 Route::get('/', function () {
     return view('welcome ');
@@ -71,6 +72,15 @@ Route::middleware(['auth','verified'])->group(function () {
     Route::post('/polls/{poll}/close',[PollController::class,'close'])->name('polls.close');
     Route::delete('/polls/{poll}',  [PollController::class,'destroy'])->name('polls.destroy');
 });
+
+Route::middleware(['auth','verified','admin'])
+    ->prefix('admin')->name('admin.')
+    ->group(function () {
+        Route::get('users', [AdminUserController::class,'index'])->name('users.index');
+        Route::patch('users/{user}/role', [AdminUserController::class,'updateRole'])->name('users.update-role');
+        Route::patch('users/{user}/toggle', [AdminUserController::class,'toggleActive'])->name('users.toggle');
+        Route::delete('users/{user}', [AdminUserController::class,'destroy'])->name('users.destroy');
+    });
 
 
 require __DIR__.'/auth.php';

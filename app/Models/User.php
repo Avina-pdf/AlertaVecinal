@@ -9,6 +9,11 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    /** Roles  */
+
+
+  
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
     use Notifiable;
@@ -22,7 +27,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'is_active',
     ];
+    public const ROLE_USER  = 'user';
+    public const ROLE_ADMIN = 'admin';
+    
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -46,7 +60,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-  public function polls()
+    public function polls()
     {
         return $this->hasMany(Poll::class);
     }
@@ -59,10 +73,20 @@ class User extends Authenticatable
 
 
     // app/Models/User.php
-public function posts(){ return $this->hasMany(\App\Models\Post::class); }
-public function comments(){ return $this->hasMany(\App\Models\Comment::class); }
-public function likes(){ return $this->hasMany(\App\Models\Like::class); }
-public function reports() { return $this->hasMany(\App\Models\Report::class); }
-
-
+    public function posts()
+    {
+        return $this->hasMany(\App\Models\Post::class);
+    }
+    public function comments()
+    {
+        return $this->hasMany(\App\Models\Comment::class);
+    }
+    public function likes()
+    {
+        return $this->hasMany(\App\Models\Like::class);
+    }
+    public function reports()
+    {
+        return $this->hasMany(\App\Models\Report::class);
+    }
 }

@@ -31,6 +31,12 @@
                     <x-nav-link :href="route('polls.index')" :active="request()->routeIs('polls.*')" class="text-white font-semibold hover:bg-[#22C55E]/30 px-3 py-2 rounded transition-all duration-300 ease-in-out hover:scale-105">
                         {{ __('Encuestas') }}
                     </x-nav-link>
+                    @if(auth()->check() && auth()->user()->isAdmin())
+  <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+    Admin
+  </x-nav-link>
+@endif
+
                 </div>
             </div>
 
