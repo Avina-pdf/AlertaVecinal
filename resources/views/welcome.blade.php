@@ -10,139 +10,80 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="bg-gradient-to-br from-[#FFFFFF] to-[#F3F4F6] text-[#1E3A8A] flex items-center justify-center min-h-screen relative overflow-hidden">
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-green-100 to-blue-300 relative overflow-hidden">
 
-    <!-- Animated 3D Map Background -->
-    <div id="map-bg" class="absolute inset-0 z-0">
-        <canvas id="three-map" style="width:100vw; height:100vh; display:block;"></canvas>
+    <!-- Decorative Blobs Background -->
+    <div class="absolute inset-0 -z-10">
+        <div class="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-400 via-green-300 to-blue-200 opacity-30 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tr from-green-400 via-blue-300 to-green-200 opacity-30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div class="absolute top-1/2 left-1/2 w-72 h-72 bg-gradient-to-br from-blue-200 via-green-100 to-blue-100 opacity-20 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
     </div>
 
-    <div class="relative z-10 w-full max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
+    <div class="relative z-10 w-full max-w-4xl mx-auto bg-white/90 rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row backdrop-blur-lg border border-blue-100">
         <!-- Left: Info Section -->
-        <div class="flex-1 p-10 flex flex-col justify-center bg-gradient-to-br from-[#1E3A8A]/10 to-[#22C55E]/10">
-            <h1 class="text-4xl font-bold mb-4 text-[#1E3A8A]">Bienvenido a Alerta</h1>
-            <p class="text-lg text-[#1E3A8A]/80 mb-6">
+        <div class="flex-1 p-10 flex flex-col justify-center bg-gradient-to-br from-blue-50/80 to-green-50/80">
+            <h1 class="text-5xl font-extrabold mb-4 text-blue-900 drop-shadow-lg">Bienvenido a <span class="text-green-500">Alerta</span></h1>
+            <p class="text-lg text-blue-800/80 mb-8">
                 Conecta con tu comunidad, reporta lo que sucede y mantente informado al instante.
             </p>
-            <ul class="space-y-3 mb-8">
-                <li class="flex items-center">
-                    <span class="inline-block w-3 h-3 rounded-full bg-[#22C55E] mr-3"></span>
-                    <span class="text-[#1E3A8A]">🔔 Notificaciones instantáneas y seguras</span>
+            <ul class="space-y-4 mb-10">
+                <li class="flex items-center gap-3">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 text-xl shadow">🔔</span>
+                    <span class="text-blue-900 font-medium">Notificaciones instantáneas y seguras</span>
                 </li>
-                <li class="flex items-center">
-                    <span class="inline-block w-3 h-3 rounded-full bg-[#1E3A8A] mr-3"></span>
-                    <span class="text-[#1E3A8A]">📱 Diseño moderno y fácil de usar</span>
+                <li class="flex items-center gap-3">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 text-xl shadow">📱</span>
+                    <span class="text-blue-900 font-medium">Diseño moderno y fácil de usar</span>
                 </li>
-                <li class="flex items-center">
-                    <span class="inline-block w-3 h-3 rounded-full bg-[#22C55E] mr-3"></span>
-                    <span class="text-[#1E3A8A]">🛡️ Tu información siempre protegida</span>
+                <li class="flex items-center gap-3">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600 text-xl shadow">🛡️</span>
+                    <span class="text-blue-900 font-medium">Tu información siempre protegida</span>
                 </li>
             </ul>
             <div class="flex space-x-4">
                 @if (Route::has('login'))
                     <a
                         href="{{ route('login') }}"
-                        class="px-6 py-2 rounded-lg bg-gradient-to-r from-[#1E3A8A] to-[#22C55E] text-white font-semibold shadow-lg hover:from-[#22C55E] hover:to-[#1E3A8A] transition-all duration-300"
+                        class="px-8 py-3 rounded-lg bg-gradient-to-r from-blue-700 to-green-500 text-white font-semibold shadow-lg hover:from-green-500 hover:to-blue-700 transition-all duration-300"
                     >
-                        Log in
+                        Iniciar sesión
                     </a>
                     @if (Route::has('register'))
                         <a
                             href="{{ route('register') }}"
-                            class="px-6 py-2 rounded-lg border border-[#1E3A8A] text-[#1E3A8A] font-semibold shadow-lg bg-white hover:bg-[#F3F4F6] transition-all duration-300"
+                            class="px-8 py-3 rounded-lg border border-blue-700 text-blue-700 font-semibold shadow-lg bg-white hover:bg-blue-50 transition-all duration-300"
                         >
-                            Register
+                            Registrarse
                         </a>
                     @endif
                 @endif
             </div>
         </div>
-        <!-- Right: 3D City Map Animation Section -->
-        <div class="flex-1 bg-gradient-to-br from-[#22C55E]/30 to-[#1E3A8A]/30 flex items-center justify-center p-10">
+        <!-- Right: Illustration Section -->
+        <div class="flex-1 flex items-center justify-center p-10 bg-gradient-to-br from-green-50/60 to-blue-50/60">
             <div class="w-full h-80 flex items-center justify-center relative">
-            <canvas id="three-city-map" class="rounded-2xl shadow-xl w-full h-full"></canvas>
+                <!-- Simple SVG City Illustration -->
+                <svg viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                    <ellipse cx="200" cy="300" rx="180" ry="20" fill="#E0F2FE" />
+                    <rect x="60" y="180" width="40" height="100" rx="8" fill="#38BDF8"/>
+                    <rect x="120" y="140" width="50" height="140" rx="10" fill="#22C55E"/>
+                    <rect x="190" y="110" width="60" height="170" rx="12" fill="#2563EB"/>
+                    <rect x="270" y="170" width="40" height="110" rx="8" fill="#38BDF8"/>
+                    <rect x="320" y="200" width="30" height="80" rx="6" fill="#22C55E"/>
+                    <rect x="80" y="210" width="20" height="70" rx="4" fill="#2563EB"/>
+                    <rect x="240" y="210" width="20" height="70" rx="4" fill="#22C55E"/>
+                    <circle cx="200" cy="90" r="18" fill="#FACC15" opacity="0.8"/>
+                    <g>
+                        <rect x="170" y="250" width="20" height="30" rx="3" fill="#F1F5F9"/>
+                        <rect x="210" y="250" width="20" height="30" rx="3" fill="#F1F5F9"/>
+                    </g>
+                </svg>
+                <!-- Optional: Add a floating notification icon -->
+                <div class="absolute top-8 right-8 animate-bounce">
+                    <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white shadow-lg border-2 border-green-400 text-green-500 text-3xl">🔔</span>
+                </div>
             </div>
-            <script src="https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.min.js"></script>
-            <script>
-            document.addEventListener('DOMContentLoaded', function () {
-            const canvas = document.getElementById('three-city-map');
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-            renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-
-            const scene = new THREE.Scene();
-            scene.background = null;
-
-            const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
-            camera.position.set(0, 15, 25);
-            camera.lookAt(0, 0, 0);
-
-            // Ambient and directional light
-            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            const dirLight = new THREE.DirectionalLight(0x1E3A8A, 0.7);
-            dirLight.position.set(10, 20, 10);
-            scene.add(dirLight);
-
-            // Generate simple city blocks
-            const blockSize = 2;
-            const blockGap = 0.5;
-            const rows = 5;
-            const cols = 7;
-
-            for (let x = -cols/2; x < cols/2; x++) {
-                for (let z = -rows/2; z < rows/2; z++) {
-                // Random building height
-                const height = Math.random() * 6 + 2;
-                const geometry = new THREE.BoxGeometry(blockSize, height, blockSize);
-                const color = Math.random() > 0.5 ? 0x22C55E : 0x1E3A8A;
-                const material = new THREE.MeshStandardMaterial({
-                    color: color,
-                    roughness: 0.6,
-                    metalness: 0.2,
-                });
-                const building = new THREE.Mesh(geometry, material);
-                building.position.set(
-                    x * (blockSize + blockGap),
-                    height / 2,
-                    z * (blockSize + blockGap)
-                );
-                scene.add(building);
-                }
-            }
-
-            // Simple ground plane
-            const groundGeo = new THREE.PlaneGeometry(30, 20);
-            const groundMat = new THREE.MeshStandardMaterial({ color: 0xF3F4F6 });
-            const ground = new THREE.Mesh(groundGeo, groundMat);
-            ground.rotation.x = -Math.PI / 2;
-            ground.position.y = 0;
-            scene.add(ground);
-
-            // Animation loop (rotate camera around city)
-            let angle = 0;
-            function animate() {
-                angle += 0.003;
-                camera.position.x = Math.sin(angle) * 25;
-                camera.position.z = Math.cos(angle) * 25;
-                camera.lookAt(0, 0, 0);
-                renderer.render(scene, camera);
-                requestAnimationFrame(animate);
-            }
-            animate();
-
-            // Responsive resize
-            window.addEventListener('resize', () => {
-                const width = canvas.clientWidth;
-                const height = canvas.clientHeight;
-                renderer.setSize(width, height, false);
-                camera.aspect = width / height;
-                camera.updateProjectionMatrix();
-            });
-            });
-            </script>
         </div>
     </div>
-
-    
-    
 </body>
 </html>
