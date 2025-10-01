@@ -4,9 +4,10 @@ namespace App\Notifications;
 
 use App\Models\Post;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class NewPostPublished extends Notification
+class NewPostPublished extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -14,7 +15,8 @@ class NewPostPublished extends Notification
 
     public function via($notifiable): array
     {
-        return ['database']; // luego puedes agregar 'broadcast' o 'mail'
+        // Más adelante puedes agregar 'broadcast' o 'mail'
+        return ['database'];
     }
 
     public function toDatabase($notifiable): array
@@ -24,11 +26,10 @@ class NewPostPublished extends Notification
             'author_id'   => $this->post->user_id,
             'author_name' => optional($this->post->user)->name ?? 'Alguien',
             'excerpt'     => str($this->post->body)->limit(120),
-            'created'     => $this->post->created_at?->toDateTimeString(),
+            'created'     => optional($this->post->created_at)?->toDateTimeString(),
         ];
     }
 
-    // opcional, por si algún lugar usa toArray
     public function toArray($notifiable): array
     {
         return $this->toDatabase($notifiable);
