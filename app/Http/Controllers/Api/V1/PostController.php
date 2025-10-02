@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
+    public function count()
+{
+    return response()->json(['total' => \App\Models\Post::count()]);
+}
+
     public function index(Request $r)
     {
         $q = Post::query()
