@@ -10,6 +10,11 @@ use App\Http\Controllers\Api\V1\PollController;
 
 
 Route::prefix('v1')->group(function () {
+
+    Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    // ...
+    Route::get('posts/count', [PostController::class, 'count']); // 👈
+});
     Route::get('ping', fn() => response()->json(['pong' => true]));
 
     // Público
