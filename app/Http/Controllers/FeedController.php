@@ -19,4 +19,13 @@ class FeedController extends Controller
 
         return view('dashboard', compact('posts'));
     }
+    public function index()
+{
+    $posts = Post::with(['user', 'images'])
+        ->latest()
+        ->paginate(10);   // 👈 esto devuelve data+meta+links
+    
+    return response()->json($posts);
+}
+
 }
